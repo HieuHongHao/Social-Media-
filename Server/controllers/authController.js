@@ -19,7 +19,6 @@ const signUp = catchAsync(async(req,res) => {
     if(!email){throw new AppError("Needs email",404);}
     
     const newUser = await userModel.create(req.body);
-    const token = jwt.sign({id:newUser._id},process.env.SECRET,{expiresIn: process.env.EXPIRES});
     signToken(res,newUser);
 })
 const logIn = catchAsync(async(req,res) => {
