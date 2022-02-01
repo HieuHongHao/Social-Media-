@@ -79,12 +79,14 @@ const deletePost = catchAsync(async(req,res) => {
 })
 const reactPost = catchAsync(async(req,res) => {
     const post = await findPost(req.params.id,false,req.user._id);
-    const {like} = req.body;
-    post.likeNumbers += like;
+    const {likes,hearts} = req.body;
+    post.likeNumbers = likes ? likes : post.likeNumbers;
+    post.heartNumbers = hearts? hearts: post.heartNumbers;
     await post.save(); // run validators again 
     res.status(202).json({
         status: "Sucess",
-        data: post.likeNumbers
+        likeNumbers: post.likeNumbers,
+        heartNumbers: post.heartNumbers
     })
 })
 module.exports = {

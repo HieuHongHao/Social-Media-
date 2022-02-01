@@ -11,12 +11,12 @@ import {
 } from "@material-ui/core";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
-import {blue} from "@material-ui/core/colors"
+import { blue } from "@material-ui/core/colors";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import { useState } from "react";
 import Comment from "./Comment";
-import API from "./Api"
+import API from "./Api";
 const useStyles = makeStyles((theme) => ({
   root: {
     maxWidth: "auto",
@@ -79,9 +79,31 @@ const PrettyButton = withStyles({
     },
   },
 })(Button);
-export default function SinglePost({ post,currentUser }) {
+export default function SinglePost({ post, currentUser }) {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
+  const [likes, setLikes] = useState(post.likeNumbers ? post.likeNumbers : 0);
+  const [hearts, setHearts] = useState(post.heartNumbers ? post.heartNumbers : 0);
+  function updateReaction(reaction) {
+    
+    return API.patch(`/posts/react/${post._id}`, reaction, {
+      headers: {
+        Authorization: localStorage.getItem("jwt"),
+      },
+    });
+  }
+  function handelReaction(reactions) {
+    if (reactions.likes) {
+      updateReaction({ likes: likes + 1 }).then((res) => {
+       setLikes(res.data.likeNumbers);
+      });
+    }
+    if (reactions.hearts) {
+      updateReaction({ hearts: hearts + 1 }).then((res) =>
+        setHearts(res.data.heartNumbers)
+      );
+    }
+  }
   return (
     <Paper elevation={24}>
       <Card className={classes.root}>
@@ -108,12 +130,18 @@ export default function SinglePost({ post,currentUser }) {
           </Typography>
         </CardContent>
         <CardActions>
-          <PrettyButton aria-label="add to favorites">
-            <Typography>120</Typography>
+          <PrettyButton
+            aria-label="add to favorites"
+            onClick={() => handelReaction({ hearts: true })}
+          >
+            <Typography>{hearts}</Typography>
             <FavoriteIcon />
           </PrettyButton>
-          <PrettyButton aria-label="add to favorites">
-            <Typography>11</Typography>
+          <PrettyButton
+            aria-label="add to favorites"
+            onClick={() => handelReaction({ likes: true })}
+          >
+            <Typography>{likes}</Typography>
             <ThumbUpIcon />
           </PrettyButton>
           <PrettyButton onClick={() => setOpen(!open)}>
@@ -121,7 +149,11 @@ export default function SinglePost({ post,currentUser }) {
           </PrettyButton>
         </CardActions>
         <Collapse in={open} timeout={500}>
-          <Comment postComments={post.comments} currentUser={currentUser} postId = {post._id}/>
+          <Comment
+            postComments={post.comments}
+            currentUser={currentUser}
+            postId={post._id}
+          />
         </Collapse>
       </Card>
     </Paper>

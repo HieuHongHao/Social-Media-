@@ -13,7 +13,7 @@ router.route("/")
 router.route("/:id")
       .get(postController.getPost)
       .patch(postController.editPost)
-      .delete(postController.deletePost)
-      .post(postController.reactPost);
+      .delete(postController.deletePost);
+router.route("/react/:id").patch(postController.reactPost);
 router.use("/:postid/comments", commentRouter);
 module.exports = router;

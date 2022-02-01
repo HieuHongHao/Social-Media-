@@ -18,6 +18,10 @@ const postSchema = new Schema(
       type: Number,
       default: 0,
     },
+    heartNumbers:{
+      type: Number,
+      default: 0
+    },
     content: {
       type: String,
       required: [true, "A post must have a content"],
