@@ -43,7 +43,10 @@ const createPost = catchAsync(async(req,res) => {
         throw new AppError("Post can not be empty",404);
     }
     const post = await postModel.create({author,content,title});
-    await post.populate("author");
+    await post.populate({
+        path: "author",
+        sort: {createdAt:-1}
+    });
     res.status(202).json({
         status: "Success",
         post,

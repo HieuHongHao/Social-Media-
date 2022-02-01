@@ -1,4 +1,4 @@
-import { Container, makeStyles, Collapse } from "@material-ui/core";
+import { Container, makeStyles, Collapse, Typography } from "@material-ui/core";
 import { useState, useEffect } from "react";
 import { blue } from "@material-ui/core/colors";
 import SinglePost from "./SinglePost";
@@ -6,6 +6,7 @@ import MakePost from "./MakePost";
 import api from "./Api";
 import Pagination from "@material-ui/lab/Pagination";
 import { TransitionGroup } from "react-transition-group";
+
 
 const useStyles = makeStyles((theme) => ({
   ul: {
@@ -52,7 +53,11 @@ export default function Post() {
               Authorization: localStorage.getItem("jwt"),
             },
           });
-          setPosts((prevPosts) => [res.data.post,...prevPosts]);
+          if (currentPage !== 1) {
+            setCurrentPage(1); // user return to page 1 after making a new page
+          } else {
+            setPosts((prevPosts) => [res.data.post, ...prevPosts]);
+          }
         } catch (err) {
           console.log(err);
         }
@@ -60,8 +65,9 @@ export default function Post() {
     }
     createPost();
   }, [post]);
-  
-  useEffect(() => {     // only fetch posts after user click on next page 
+
+  useEffect(() => {
+    // only fetch posts after user click on next page or others user make a post
     async function fetchPost() {
       const response = await api.get(`/posts/?page=${currentPage}&limit=10`, {
         headers: {
@@ -69,27 +75,28 @@ export default function Post() {
         },
       });
       const { posts, numPosts, user } = response.data;
-      return { posts, numPosts,user };
+      return { posts, numPosts, user };
     }
     fetchPost().then((data) => {
       setPosts(data.posts);
-      if(!totalPage){    // only set total page when fetching posts for the first time 
+      if (!totalPage) {
+        // only set total page when fetching posts for the first time
         setTotalPage(data.numPosts);
       }
-      if(!currentUser){
+      if (!currentUser) {
         setCurrentUser(data.user);
       }
-     });
+    });
   }, [currentPage]);
   return (
     <>
       <Container maxWidth="md">
-        <MakePost setPost={setPost} user = {currentUser} />
-        <TransitionGroup>
+        <MakePost setPost={setPost} user={currentUser} />
+       <TransitionGroup>
           {posts?.map((post) => {
             return (
               <Collapse timeout={1000} key={post._id}>
-                <SinglePost  post={post} />
+                <SinglePost post={post} currentUser = {currentUser}/>
               </Collapse>
             );
           })}

@@ -79,10 +79,9 @@ const PrettyButton = withStyles({
     },
   },
 })(Button);
-export default function SinglePost({ post }) {
+export default function SinglePost({ post,currentUser }) {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
-  const [comments,setCommments]= useState([]);
   return (
     <Paper elevation={24}>
       <Card className={classes.root}>
@@ -121,8 +120,8 @@ export default function SinglePost({ post }) {
             <Typography>Comment</Typography>
           </PrettyButton>
         </CardActions>
-        <Collapse in={open} timeout={300}>
-          <Comment />
+        <Collapse in={open} timeout={500}>
+          <Comment postComments={post.comments} currentUser={currentUser} postId = {post._id}/>
         </Collapse>
       </Card>
     </Paper>

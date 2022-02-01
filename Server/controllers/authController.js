@@ -17,7 +17,6 @@ const signUp = catchAsync(async(req,res) => {
     if(!username){throw new AppError("Needs user name",404);}
     if(!password){throw new AppError("Needs password",404);}
     if(!email){throw new AppError("Needs email",404);}
-    
     const newUser = await userModel.create(req.body);
     signToken(res,newUser);
 })
@@ -25,9 +24,7 @@ const logIn = catchAsync(async(req,res) => {
     const {password,email} = req.body;
     if(!password) {throw new AppError("Needs password",404);}
     if(!email) {throw new AppError("Needs email",404);}
-    console.log(email);
     const user = await userModel.findOne({email}).select("+password");
-    console.log(user);
     if(!user){ throw new AppError("No users with this email address found",404);}
     if(!await user.comparePassWord(password)){
         throw new AppError("Wrong password and email combination",404);
@@ -41,7 +38,6 @@ const checkCredentials = async (req,res,next) => {
     if(!tokenString){
         return next(new AppError("Please log in ",404));
     }
-    console.log(tokenString);
     if(tokenString.split(" ")[1] === "null"){
         console.log("This run");
         return next(new AppError("Invalid token",403));

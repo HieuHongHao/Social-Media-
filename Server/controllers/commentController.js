@@ -31,9 +31,10 @@ const createComment =  catchAsync(async(req,res) => {
         throw new AppError("comment can not be empty",404);
     }
     const comment = await commentModel.create({content,post:req.params.postid,author:req.user._id});
+    await comment.populate("author");
     res.status(202).json({
         status: "Success",
-        data : comment
+        comment
     })
 })
 

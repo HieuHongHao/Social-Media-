@@ -11,7 +11,7 @@ import Logout from "./Component/LogOut";
 function App() {
   const [current, setCurrent] = useState("Home");
   const [userAuth, setUserAuth] = useState();
-  if (!userAuth) {
+  if (!userAuth && !localStorage.getItem("jwt")) {
     return (
       <div className="App-header">
         <Login setUserAuth={setUserAuth}/>

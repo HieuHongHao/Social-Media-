@@ -36,7 +36,7 @@ export default function MakePost({setPost,user}) {
       setPost({postContent,postTitle});
     }
   }
-  console.log(user);
+  
  return (
     <>
       <form onSubmit={handelSubmit}>
